@@ -1,5 +1,5 @@
 # KumaSocks
-A light-weighted transparent proxy to socks5 converter written in Golang
+A light-weighted transparent proxy to socks5 converter written in Golang, inspired by [Transocks](https://github.com/cybozu-go/transocks).
 ## Usage
 
 You should create a file for the config, using the TOML format.
