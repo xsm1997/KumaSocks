@@ -4,7 +4,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"net"
@@ -42,31 +41,63 @@ func readConf(path string) string {
 }
 
 func handleConnection(conn *net.TCPConn) {
+	defer conn.Close()
+
 	dstAddr, err := GetOriginalDST(conn)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
+	
+	//log.Println("Incoming connection to " + dstAddr.String())
 
 	proxy, err := proxyDialer.Dial("tcp", dstAddr.String())
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer proxy.Close()
 
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 
 	go func() {
-		io.Copy(proxy, conn)
+		//io.Copy(proxy, conn)
+		buf := make([]byte, 1500)
+		for {
+			nr, er := conn.Read(buf)
+			if nr > 0 {
+				_, ew := proxy.Write(buf[:nr])
+				if ew != nil {
+					break
+				}
+			}
+			if er != nil {
+				break
+			}
+		}
 		wg.Done()
 	}()
 
 	go func() {
-		io.Copy(conn, proxy)
+		//io.Copy(conn, proxy)
+		buf := make([]byte, 1500)
+		for {
+			nr, er := proxy.Read(buf)
+			if nr > 0 {
+				_, ew := conn.Write(buf[:nr])
+				if ew != nil {
+					break
+				}
+			}
+			if er != nil {
+				break
+			}
+		}
 		wg.Done()
 	}()
 
 	wg.Wait()
-
-	conn.Close()
-	proxy.Close()
 }
 
 func main() {
