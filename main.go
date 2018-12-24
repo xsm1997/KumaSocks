@@ -48,7 +48,7 @@ func handleConnection(conn *net.TCPConn) {
 		log.Fatal(err)
 		return
 	}
-	
+
 	//log.Println("Incoming connection to " + dstAddr.String())
 
 	proxy, err := proxyDialer.Dial("tcp", dstAddr.String())
@@ -76,6 +76,8 @@ func handleConnection(conn *net.TCPConn) {
 				break
 			}
 		}
+		conn.Close()
+		proxy.Close()
 		wg.Done()
 	}()
 
@@ -94,6 +96,8 @@ func handleConnection(conn *net.TCPConn) {
 				break
 			}
 		}
+		conn.Close()
+		proxy.Close()
 		wg.Done()
 	}()
 
@@ -118,7 +122,7 @@ func main() {
 
 	defer listener.Close()
 
-	proxyUrl, err := url.Parse(conf.ProxyAddr)
+	proxyURL, err := url.Parse(conf.ProxyAddr)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -129,7 +133,7 @@ func main() {
 		DualStack: true,
 	}
 
-	proxyDialer, err = proxy.FromURL(proxyUrl, dialer)
+	proxyDialer, err = proxy.FromURL(proxyURL, dialer)
 	if err != nil {
 		log.Fatal(err)
 		return
