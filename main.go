@@ -4,6 +4,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net"
@@ -62,40 +63,14 @@ func handleConnection(conn *net.TCPConn) {
 	wg.Add(2)
 
 	go func() {
-		//io.Copy(proxy, conn)
-		buf := make([]byte, 1500)
-		for {
-			nr, er := conn.Read(buf)
-			if nr > 0 {
-				_, ew := proxy.Write(buf[:nr])
-				if ew != nil {
-					break
-				}
-			}
-			if er != nil {
-				break
-			}
-		}
+		io.Copy(proxy, conn)
 		conn.Close()
 		proxy.Close()
 		wg.Done()
 	}()
 
 	go func() {
-		//io.Copy(conn, proxy)
-		buf := make([]byte, 1500)
-		for {
-			nr, er := proxy.Read(buf)
-			if nr > 0 {
-				_, ew := conn.Write(buf[:nr])
-				if ew != nil {
-					break
-				}
-			}
-			if er != nil {
-				break
-			}
-		}
+		io.Copy(conn, proxy)
 		conn.Close()
 		proxy.Close()
 		wg.Done()
