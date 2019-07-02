@@ -22,3 +22,7 @@ When you want to make KumaSocks more smaller, you can consider to use upx. Here 
 ```
 upx --best KumaSocks
 ```
+
+## FAQS
+
+If you have problems with splice in Linux, try to turn on the `io-copy-hack` option in config file. It will reduce the performance as it is using a custom version of io.Copy without using splice system call.
