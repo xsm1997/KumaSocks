@@ -11,7 +11,7 @@ The default conf file is located at /etc/kumasocks.toml. You can customize it us
 
 Then you can use iptables redirect to route traffics to KumaSocks, and it will directly route them to the socks5 server. Be aware, there is no encryption. Use at your own risk!
 
-You can refer to [this page](https://nepno.com/archives/27) to find detailed instructions. (Chinese only)
+You can refer to [this page](https://nepno.com/archives/67fdd896-c089-4ccd-a7b8-77faed421d16) to find detailed instructions. (Chinese only)
 
 ## Advanced Usage
 When you want to run KumaSocks on some embedded devices, such as routers, you can reduce the size of executables by using following build command.
